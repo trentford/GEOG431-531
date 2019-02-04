@@ -1,0 +1,80 @@
+%I created this on MATLAB exchange
+
+%% In this example, Oxy and Hydr represent two independent variables.
+%This is a FUNCTION however can be ran like a script.
+
+%The original:  https://www.mathworks.com/matlabcentral/fileexchange/66233-isostats-oxy-hydr-allp?s_tid=prof_contriblnk
+
+%If you want to run this like a function, you must
+
+%1. Have the file (above) saved in the same directory that you are working in.
+%2. the function is
+
+%[Summary Stats] = IsoStats(Oxy,Hyd,Allp)
+
+%you can also call the function like this;
+
+%[a] = Isostats(x,y,z)
+
+%just make sure the z component is a copy of either x or y.
+
+
+
+
+%~~~~~~~~~~~~~~~IAEA OLSR~~~~~~~~~~~~~~~~~~~~~~~~
+%SLOPE_NORMAL
+AA = sum(Oxy.*Hydr);
+BB = ((sum(Oxy)*(sum(Hydr)))/length(Oxy));
+CC = AA - BB;
+DD = (sum(Oxy.^2)) - ((sum(Oxy))^2/(length(Oxy)));
+EE = CC / DD;
+%INTERCEPT_NORMAL
+FF = ((sum(Hydr)/(length(Oxy))) - (EE.*((sum(Oxy))/(length(Oxy)))));
+%STERROR_NORMAL
+GG = sqrt(((sum(Hydr.^2)) - (FF * (sum(Hydr))) - ...
+    (EE * (sum(Hydr.*Oxy))))/((length(Oxy))-2));
+%STDEV_SLOPE_NORMAL
+HH = (((sum(Oxy.^2))- (((sum(Oxy))^2)/(length(Oxy))))^(0.5));
+II = EE/HH;
+%STDEV_INT_NORMAL
+JJ = (length(Oxy)) * ((sum(Oxy.^2)) - (((sum(Oxy))^2)/(length(Oxy))));
+KK = EE * (sqrt((sum(Oxy.^2)) / JJ));
+%CORRCOEF_NORMAL
+LL = (length(Oxy) * (sum(Oxy.*Hydr))) - (((sum(Oxy))*(sum(Hydr))));
+MM = ((length(Oxy))*(sum(Oxy.^2))) - ((sum(Oxy))^2);  
+NN = ((length(Oxy))*(sum(Hydr.^2))) - ((sum(Hydr))^2);
+OO = sqrt(MM*NN);
+PP = LL / OO;
+Slope_N = EE;
+Intercept_N = FF;
+StError_N = GG;
+StDev_Slope_N = II;
+StDev_Int_N = KK;
+CorrCoef_N = PP;
+
+%% Plotting Function
+
+plots = scatter(Oxy,Hydr);
+plots.LineWidth = 0.5;
+plots.MarkerEdgeColor = 'k';
+plots.Marker = '+';
+plots.MarkerFaceColor = 'k';
+hold on
+x_x = -30:10;
+y_y = (Slope_N.*x_x)+Intercept_N;
+plot(x_x,y_y,'LineWidth',2);
+% title('Normal LMWL');
+% xlabel('\delta^1^8O(per mil)');
+% ylabel('\delta^2H(per mil)');
+str = ['y_i =' num2str(Slope_N) 'x_i +' num2str(Intercept_N)];
+text(-25,-50,str);
+str1 = ['r^2 =' num2str(CorrCoef_N)];
+text(-25,-70,str1);
+str2 = ['Normal'];
+text(-25,-30,str2);
+%%[h,p,ci] = ttest(y_y1,y_y, 'Tail', 'both')
+SummaryStats = table([Slope_W;Slope_N;Slope_M],[StDev_Slope_W;StDev_Slope_N;StDev_Slope_M],...
+    [Intercept_W;Intercept_N;Intercept_M],[StDev_Int_W;StDev_Int_N;StDev_Int_M],[StError_W;StError_N;StError_M],...
+    [CorrCoef_W;CorrCoef_N;CorrCoef_M],'VariableNames', {'Slope','StDev_Slope'...
+    'Intercept','StDev_Int','StError','CorrCoef'},...
+    'RowNames',{'PWLSR','OLSR','PWMA'});
