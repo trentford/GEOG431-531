@@ -14,29 +14,20 @@ tmean = NaN(621,1405,444);
 count = 1; 
 %Loop through all of the files, which are grouped by year and months
 for i = 1981:2017
-    for ii = 1:12
-        
-        if ii < 10
-            fileName = ['PRISM_tmean_stable_4kmM3_' num2str(i) '0' num2str(ii) '_bil.bil']; 
-        else
-            fileName = ['PRISM_tmean_stable_4kmM3_' num2str(i) num2str(ii) '_bil.bil']; 
-        end
-        %open the PRISM file
-        fid = fopen(fileName); 
-        data = fread(fid,[1405 621],'float'); 
-        fclose(fid); 
-        %Replace missing values (-1000) with NaN
-        for j = 1:621
-            data(data(:,j) <= -1000, j) = NaN;
-        end
-        data = data'; %transpose the data to make it latitude x longitude
-        
-        tmean(:,:,count) = data; 
-        count = count + 1; 
-        
-        clear fileName fid data 
+    fileName = ['PRISM_tmean_stable_4kmM3_' num2str(i) '01_bil.bil']; 
+    %open the PRISM file
+    fid = fopen(fileName); 
+    data = fread(fid,[1405 621],'float'); 
+    fclose(fid); 
+    %Replace missing values (-1000) with NaN
+    for j = 1:621
+        data(data(:,j) <= -1000, j) = NaN;
     end
-    
+    data = data'; %transpose the data to make it latitude x longitude
+        
+    count = count + 1; 
+        
+    clear fileName fid data 
 end
 
 %The output of this code will be "tmean", which will be a 3-D object that
