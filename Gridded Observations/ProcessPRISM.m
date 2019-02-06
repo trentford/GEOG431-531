@@ -10,7 +10,7 @@ R.LongitudeLimits = [-125.0208333 -66.4791667];
 R.ColumnsStartFrom = 'north';
 R.RowsStartFrom = 'west';
 
-tmean = NaN(621,1405,444); 
+tmean = NaN(621,1405,37); 
 count = 1; 
 %Loop through all of the files, which are grouped by year and months
 for i = 1981:2017
