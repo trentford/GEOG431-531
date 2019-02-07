@@ -24,7 +24,8 @@ for i = 1981:2017
         data(data(:,j) <= -1000, j) = NaN;
     end
     data = data'; %transpose the data to make it latitude x longitude
-        
+       
+    tmean(:,:,count) = data;    
     count = count + 1; 
         
     clear fileName fid data 
