@@ -52,20 +52,8 @@ for i = 1:621 %rows
         %precipitation and Nino 3.4 index (column 2 of enso) 
         [r,p] = corrcoef(subset,enso(:,2),'rows','complete'); 
         
-        %----------------------------------------------------------------
-        %If you only want to retain the statistically significant
-        %correlations, then you can screen out those for which the p-value
-        %exceeded 0.05
-%         if p(2) <= 0.05
-%             corrs(i,ii) = r(2); 
-%         else
-%             corrs(i,ii) = 0; 
-%         end
-        %If you would instead like to plot all correlations, irrespective
-        %of their significance, then just comment out the code from lines
-        %23 to 27
-        %----------------------------------------------------------------
-        
+        corrs(i,ii) = r(2); 
+                 
         clear subset r p
     end
     clc
