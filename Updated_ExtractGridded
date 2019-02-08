@@ -1,6 +1,9 @@
 % please have files in the directory.
-% Personally, I downloaded all files in a single zipped file from PRISM's site and then just kept all .bil files in separate folder.
+% Personally, I downloaded all files in a single zipped file from PRISM's
+% site and then just kept all .bil files in separate folder.
 
+% ppt is in mm
+%tmean is Celcius
 
 
 ppt = NaN(621,1405,37); 
@@ -12,7 +15,7 @@ count = 1;
 
 i = 1981:2017;
 
-     
+
 for ii = 1:37
 
     fileName1 = ['PRISM_tmean_stable_4kmM2_' num2str(i(ii)) '01_bil.bil']; 
@@ -28,6 +31,9 @@ for ii = 1:37
     for j = 1:621
         data1(data1(:,j) <= -1000, j) = NaN;
         data2(data2(:,j) <= -1000, j) = NaN;
+        
+        data1(data1(:,j) >= 150, j) = NaN;
+        data2(data2(:,j) >= 150, j) = NaN;
     end
     data1 = data1'; %transpose the data to make it latitude x longitude
     data2 = data2';
@@ -36,14 +42,14 @@ for ii = 1:37
 
     for m = 1:621
         for mm = 1:1405
-            ppt(m,mm,ii) = data1(m,mm);
-            tmean(m,mm,ii) = data2(m,mm);
+            ppt(m,mm,ii) = data2(m,mm);
+            tmean(m,mm,ii) = data1(m,mm);
         end
     end
 
 
 clear fileName1 fileName2 fid1 fid2 data1 data2 
 end
-   
+
 % ppt and tmean will be 3D arrays containing all january's from 1981 to
 % 2017
