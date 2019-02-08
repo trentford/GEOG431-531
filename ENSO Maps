@@ -1,0 +1,112 @@
+clc 
+
+%This is to create 3 maps showing avergae january temperature (1981-2017) for 3 ENSO phases.
+
+%To start, enso should be a 37,1 double vector
+
+%Find isolates the row is which the criteria is met. It is returned as a vector
+r1 = find(enso >= 0.5); %El Nino
+r2 = find(enso <= -0.5); % La Nina
+r3 = find(enso < 0.5 & enso > -0.5); % neutral
+
+%tmeann is your 621x1405x37 maps
+%REMEMBER, tmean is latitude, longitude, and year (1981-2017)
+
+% this next step will pull out the matrices according to the r1,r2,r3 scenario.
+nino_temp = tmean(:,:,r1);
+nina_temp = tmean(:,:,r2);
+neut_temp = tmean(:,:,r3);
+
+
+%this loop creates 3 maps of average january temperatures of El Nino, La Nina, and Neutral ENSO.
+for i = 1:621
+    for ii = 1:1405
+        avg1 = nanmean(nino(i,ii,:));
+        avg2 = nanmean(nina(i,ii,:));
+        avg3 = nanmean(neut(i,ii,:));
+        nino_avg(i,ii) = avg1;
+        nina_avg(i,ii) = avg2;
+        neut_avg(i,ii) = avg3;
+        
+        clear avg1 avg2 avg3
+    end
+end
+
+%% MAPS
+
+figure 
+geoshow(neut_avg,R,'DisplayType','surface')
+title('Average January Neutral ENSO Temperatures (\circC) from 1981-2017')
+cb = colorbar
+
+figure
+geoshow(nino_avg,R,'DisplayType','surface')
+title('Average January El Nino Temperatures (\circC) from 1981-2017')
+cb = colorbar
+
+figure
+geoshow(nina_avg,R,'DisplayType','surface')
+title('Average January La Nina Temperatures (\circC) from 1981-2017')
+cb = colorbar
+
+%% P-value of January Temps during 3 ENSO phases
+    
+    %Nino has 13 years
+    %Nina has 13 years
+    %Neut has 11 years
+    
+    
+    %For a matrix of a large size, each cell needs to be isolated so that
+    %you end up with two vectors that look like this. Group is some
+    %identifier so that matlab can correspond each row of Y  with each
+    %group. Y is are the P-values of each cell according to El Nino phase,
+    %La Nina Phase, and Neutral phase, shown in the code below.
+    
+    % Group     y
+    %|Nino|   | 0.23 |
+    %|Nino|   | 0.55 |
+    %|Nino|   | 0.05 |
+    %|Nino|   | 0.25 |
+    %|Nino|   | p-value |
+    %|Nino|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Nina|   | p-value |
+    %|Neut|   | p-value |
+    %|Neut|   | p-value |
+    %|Neut|   | p-value |
+    %|Neut|   | p-value |
+    %|Neut|   | p-value |
+    %|Neut|   | p-value |
+    
+       
+    
+    group(1:13,1) = {'Nino'};
+    group(14:26,1) = {'Nina'};
+    group(27:37,1) = {'Neut'};
+    
+    %initialize final map of p-values
+    p_stats = NaN(621,1405);
+    
+    for i = 1:621
+        for ii = 1:1405
+            %creating your Y variable
+            y(1:13,1) = nino(i,ii,:);
+            y(14:26,1) = nina(i,ii,:);
+            y(27:37,1) = neut(i,ii,:);
+            
+            %isolating p-value
+            p = anova1(y,group,'off');
+            
+            p_stats(i,ii) = p;
+            
+            clear y p tbl stats
+        end
+    end
+    
+    % p_stats is a single 2D array showing if a grid cell from the three phases is statistically significant. Alphs default is 0.05
+    % for generating a map, please refer to protocol above
