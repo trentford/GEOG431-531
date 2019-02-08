@@ -1,0 +1,31 @@
+clc 
+
+%enso should be a 37,1 vector
+
+r1 = find(enso >= 0.5); %El Nino
+r2 = find(enso <= -0.5); % La Nina
+r3 = find(enso < 0.5 & enso > -0.5); % neutral
+
+%tmeann is your 621x1405x37 maps
+
+nino = tmean(:,:,r1);
+nina = tmean(:,:,r2);
+neut = tmean(:,:,r3);
+
+for i = 1:621
+    for ii = 1:1405
+        avg1 = nanmean(nino(i,ii,:));
+        avg2 = nanmean(nina(i,ii,:));
+        avg3 = nanmean(neut(i,ii,:));
+        nino_avg(i,ii) = avg1;
+        nina_avg(i,ii) = avg2;
+        neut_avg(i,ii) = avg3;
+        
+        clear avg1 avg2 avg3
+    end
+end
+            %%
+geoshow(neut_avg,R,'DisplayType','surface')
+    title('Average January Neutral ENSO Temperatures (\circC) from 1981-2017')
+    cb = colorbar
+    
