@@ -1,0 +1,35 @@
+%% This is to Extract NETCDF
+
+clear
+
+R = georasterref;
+R.RasterSize = [720 1440];
+R.Latlim = [20 50];
+R.Lonlim = [-130 -60];
+R.ColumnsStartFrom = 'north';
+R.RowsStartFrom = 'west';
+
+clc
+
+for i = 2003:2010 % The years of your data
+    
+       
+    EP = NaN(1440,720,365);
+    
+    ncid = netcdf.open(['Ep_' num2str(i) '_GLEAM_v3.2b.nc']); % An ID is created per file to extract data
+    
+    EP = netcdf.getVar(ncid,3); % The third variable is EP
+    
+    EP(EP <= -999) = NaN; % Get rid of missing data and change it to NaN
+    
+    EP = double(EP); %Changing the type of integer
+    
+    EP = EP(160:280,200:480,:); %extracting just the US CONUS
+      
+    netcdf.close(ncid)
+    
+    save(['GLEAM_' num2str(i) '.mat'],'EP')
+    
+end
+
+% Any questions direct to SLENORA@SIU.EDU
