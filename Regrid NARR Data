@@ -1,0 +1,37 @@
+% An example of how to regrid NARR data
+
+% The first part is your data Extraction
+
+ncid = netcdf.open('Z:\Stephania\NARR\land.nc');
+landmask = netcdf.getVar(ncid,5); % this is a variable (2-Dimensional)
+netcdf.close(ncid);
+
+clear ncid
+
+landmask = double(landmask); % Changing number type
+landmask(landmask < 1 & landmask > 0) = 1;
+landmask(landmask == -9999) = NaN; %Replace Missing Data with NaN
+
+reference = importdata('Z:Stephania/NARR/NARR Reference Lat_Long.xlsx'); % An Excel file that you will you use for Regridding data
+reference = reference.data.All_Grid;
+
+
+% Land mask regrid
+
+
+      % Don't mess with this part     
+      for ii = 1:length(reference)
+           temp(ii,1) = reference(ii,2); 
+           temp(ii,2) = reference(ii,3);
+           temp(ii,3) = landmask(reference(ii,4), reference(ii,5));
+
+      end
+        
+       newlats = (25:0.25:50)';
+       newlons = -125:0.25:-65;
+       [X,Y] = meshgrid(newlons,newlats);
+
+       Landm = griddata(temp(:,2),temp(:,1),temp(:,3),X,Y); 5 regridded Data
+       
+       LandmTest = Landm;
+       LandmTest(LandmTest < 1 & LandmTest > 0) = 1;
