@@ -1,0 +1,26 @@
+clc
+
+corr = NaN(621,1405);
+load('t_mean.mat')
+load('ppt_tot.mat')
+
+    for i = 1:621
+       
+        for ii = 1:1405
+            
+            cll(1:37,1) = tmean(i,ii,:);
+          
+            [r p] = corrcoef(cll,enso,'rows','complete');
+            
+            corr(i,ii) = r(2);
+            
+            clear cll r p
+        end
+    end
+    %%
+
+    geoshow(corr,R,'DisplayType','surface')
+    title('Correlation Coefficients between ENSO index and January Mean Temperature')
+    cb = colorbar
+%%
+    print('r2_jan_meantemps','-dpng','-r300')
