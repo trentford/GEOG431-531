@@ -1,0 +1,32 @@
+%% Extract NCEP/NCAR Data
+
+% The same way, since NCEP also compresses files in NetCDF
+
+R1 = georasterref();
+R1.RasterSize = [94 192];
+R1.LatitudeLimits = [-88 88];
+R1.LongitudeLimits = [0 359];
+R1.ColumnsStartFrom = 'north';
+R1.RowsStartFrom = 'west';
+
+for i = 2003:2010
+    
+    PET = NaN(192,94,365);
+    
+    ncid = netcdf.open(['H:\Fords Class\Assignment 3\NCEP\pevpr.sfc.gauss.' num2str(i) '.nc']); % An ID is created per file to extract data
+    
+    PET = netcdf.getVar(ncid,3); %getting the actual variables of PET
+    PET = double(PET); % Changing type of floating point number
+    
+    PET(PET == -9.969209968386869e+36) = NaN; % This is the value fo rmissing data
+    PET = PET .*(1/2453600); % Next two lines is to convert to mm/day from W/m2
+    PET = PET .*86400;
+    
+    PET = permute(PET, [2 1 3]); % this is to flip the row and column, otherwise the data is sideways
+    
+    save(['H:\Fords Class\Assignment 3\NCEP\PET_' num2str(i) '.mat'],'PET'); % change where you want to save your file
+    
+    netcdf.close(ncid)
+    clear PET
+      
+end
