@@ -1,0 +1,86 @@
+%% Station data
+
+% (1) Year
+% (2) Month
+% (3) Day
+% (4) daily average temp
+% (5) wind speed
+% (6) relative humidity
+% (7) solar rad
+% (8) PET Calculated
+% (9) lat
+% (10) lon
+
+% going to combine all csv's to one mat variable called sta
+
+bing = csvread('Binghampton.csv');
+columbia = csvread('Columbia.csv');
+dallas = csvread('Dallas.csv');
+Claire = csvread('Eau Claire.csv');
+Evansville = csvread('Evansville.csv');
+IntFalls = csvread('International Falls.csv');
+Lex = csvread('Lexington.csv');
+Mem = csvread('Memphis.csv');
+Pie = csvread('Pierre.csv');
+
+%Stations
+
+sta(1:2922,:) = bing;
+sta(2923:5844,:) = columbia;
+sta(5845:8766,:) = dallas;
+sta(8767:11688,:) = Claire;
+sta(11689:14610,:) = Evansville;
+sta(14611:17532,:) = IntFalls;
+sta(17533:20454,:) = Lex;
+sta(20455:23376,:) = Mem;
+sta(23377:26298,:) = Pie;
+
+
+
+%% ADD Day Of Year
+% since our GLEAM and NCEP data is row, col and year, the years are from 1 to 365 (or 366) and we must add DoY 
+% to properly reference the date from stations
+
+T = datetime(sta(:,1),sta(:,2),sta(:,3));
+sta(:,11) = day(T,'dayofyear');
+
+save('stations.mat','sta')
+%% EXTRACT PET AND GLEAM
+
+sta(:,12:13) = NaN;
+
+for i = 2003:2010
+    load(['C:\Users\SLP\Documents\1 SCHOOL\GLEAM\GLEAM_' num2str(i) '.mat'])
+    load(['H:\Fords Class\Assignment 3\NCEP\PET_' num2str(i) '.mat'])
+    for ii = 1:length(EP)
+        
+        r1 = find(sta(:,1) == i & sta(:,11) == ii); % this highlights the rows in sta that meet both criteria of year and day of year
+        
+        subset = sta(r1,:);  % subseting those rows
+        
+        % next section is row and columns of station latitudes and longitudes in Gleam and NCEP data
+        
+        [row, col] = latlon2pix(R,subset(:,9), subset(:,10));
+        row = round(row);
+        col = round(col);
+        [row1, col1] = latlon2pix(R1,subset(:,9), subset(:,10));
+        row1 = round(row1);
+        col1 = round(row1);
+        
+        % adding two columns in sta variable. Column 12 is EP from GLEAM. Column 13 is PET from NCEP
+        for iii = 1:length(r1)
+        
+            sta(r1(iii),12) = EP(row(iii), col(iii), ii);
+        
+            sta(r1(iii),13) = PET(row1(iii),col1(iii),ii);
+        end
+        
+    clear row row1 col col1 subset
+    end
+    
+    clear EP PET
+end
+
+%%
+
+save('stations.mat','sta')
