@@ -24,9 +24,7 @@ for i = 2003:2010 % The years of your data
     
     EP = double(EP); %Changing the type of integer
     
-    EP = EP(160:280,200:480,:); %extracting just the US CONUS
-      
-    netcdf.close(ncid)
+   netcdf.close(ncid)
     
     save(['GLEAM_' num2str(i) '.mat'],'EP')
     
