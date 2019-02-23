@@ -1,0 +1,20 @@
+%% For Linear Regression Model,  if you Use the APP, 'Regression Linear' see below
+% hit new session, 
+% your predictors will be sta at columns 4 though 7
+% your response will be sta at column 8
+% select train
+% then export model
+% you will be presented with a structure 
+% Line 10 and 13, whee it says PETModel1, you will replace with your name for the model you exported
+
+data = PETModel1.RegressionTree.X; % your predictors, columns 4 through 7
+data = table2array(data); % converting to an array
+yfit = PETModel1.predictFcn(data); % this is y hat, your modeled PET, using the modeled function
+
+b = find(isnan(sta(:,4)) == 0); % we want to fit the yfit into our meta-matrix, but some values were NaN. So this line finds which rows are NOT NaN, and fits that data in those rowa
+
+sta(b,14) = yfit; %b are the rows that are not NaN and puts in the modeled data
+
+% the regression learner app, and the structure gives you a lot of
+% information and graphs, so I would suggest you play around with it and
+% use it answer questions for your report.
