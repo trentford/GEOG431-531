@@ -1,0 +1,85 @@
+%% Adding station titles
+
+%Since we are creating regression statistics for each station, we ust be
+%able to properly reference the station. Since our 'sta' is a numeric
+%matrix, we will number them. 
+
+sta(1:2922,15) = 1; %bing;
+sta(2923:5844,15) = 2; %columbia;
+sta(5845:8766,15) = 3; %dallas;
+sta(8767:11688,15) = 4; %Claire;
+sta(11689:14610,15) = 5; %Evansville;
+sta(14611:17532,15) = 6; %IntFalls;
+sta(17533:20454,15) = 7; %Lex;
+sta(20455:23376,15) = 8; %Mem;
+sta(23377:26298,15) = 9; %Pie;
+
+save('stations.mat', 'sta'); % always save your progress!
+
+%% What is sta?
+
+% (1) Year
+% (2) Month
+% (3) Day
+% (4) daily average temp
+% (5) wind speed
+% (6) relative humidity
+% (7) solar rad
+% (8) PET Calculated
+% (9) lat
+% (10) lon
+% (11) DoY
+% (12) GLEAM PET
+% (13) NCEP EP
+% (14) Predicted PET
+% (15) station #
+
+for i = 1:9
+    r1 = find(sta(:,15) == i); % This is to reference the correct station. Find function finds which rows meets the criteria. In this case, which rows belong to station 1?
+    
+    subset = sta(r1,:); % now we will pull out sta  data for those specific rows and call that new matrix subset. We are keeping all the columns too for analysis of each station
+    
+    
+    stats_sta(i,1) = i;% This column is station number
+    stats_sta(i,2) = abs(sqrt(nanmean((subset(:,8) - subset(:,12).^2)))); %RMSE for GLEAM
+    stats_sta(i,3) = abs(sqrt(nanmean((subset(:,8) - subset(:,13).^2)))); %RMSE for NCEP
+    stats_sta(i,4) = abs(sqrt(nanmean((subset(:,8) - subset(:,14).^2)))); %RMSE for Predicted
+    
+    n = size(subset,1);
+    stats_sta(i,5) = abs(1/n*nansum((subset(:,8) - subset(:,12)))); %MAE for GLEAM
+    stats_sta(i,6) = abs(1/n*nansum((subset(:,8) - subset(:,13)))); %MAE for NCEP
+    stats_sta(i,7) = abs(1/n*nansum((subset(:,8) - subset(:,14)))); %MAE for Predicted
+
+    stats_sta(i,8) = 1/n*nansum(subset(:,12) - subset(:,8)); %bias for GLEAM
+    stats_sta(i,9) = 1/n*nansum(subset(:,13) - subset(:,8)); %bias for NCEP
+    stats_sta(i,10) = 1/n*nansum(subset(:,14) - subset(:,8)); %bias for Predicted
+    
+    i1 = corrcoef(subset(:,8),subset(:,12),'rows','complete'); %R2 for GLEAM
+    i2 = corrcoef(subset(:,8),subset(:,13),'rows','complete'); %R2 for NCEP
+    i3 = corrcoef(subset(:,8),subset(:,14),'rows','complete'); %R2 for Predicted
+    
+    stats_sta(i,11) = i1(2); %R2 for GLEAM
+    stats_sta(i,12) = i2(2); %R2 for NCEP
+    stats_sta(i,13) = i3(2); %R2 for Predicted
+    
+   
+    clear n r1 subset
+end
+
+%% Convert our array to table and name headers
+
+
+stats_sta = array2table(stats_sta);
+stats_sta.Properties.VariableNames{1} = 'Station';
+stats_sta.Properties.VariableNames{2} = 'RMSE_GLEAM';
+stats_sta.Properties.VariableNames{3} = 'RMSE_NCEP';
+stats_sta.Properties.VariableNames{4} = 'RMSE_Predicted';
+stats_sta.Properties.VariableNames{5} = 'MAE_GLEAM';
+stats_sta.Properties.VariableNames{6} = 'MAE_NCEP';
+stats_sta.Properties.VariableNames{7} = 'MAE_Predicted';
+stats_sta.Properties.VariableNames{8} = 'bias_GLEAM';
+stats_sta.Properties.VariableNames{9} = 'bias_NCEP';
+stats_sta.Properties.VariableNames{10} = 'bias_Predicted';
+stats_sta.Properties.VariableNames{11} = 'R2_GLEAM';
+stats_sta.Properties.VariableNames{12} = 'R2_NCEP';
+stats_sta.Properties.VariableNames{13} = 'R2_Predicted';
