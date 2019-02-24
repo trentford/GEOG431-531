@@ -1,0 +1,12 @@
+% This is a code you can rewrite for your, RMSE, MAE, bias, and R2
+
+e1 = bar([stats_sta(:,2), stats_sta(:,3), stats_sta(:,4)], 'BarWidth',0.95)
+set(gca, 'XTickLabel', {'Binghampton', 'Columbia', 'Dallas', 'Eau Claire', 'Evansville', 'Interational Falls', 'Lexington', 'Memphis', 'Pierre'})
+e1(1).FaceColor = [ 1 1 1] % set each one rbg from 0-1, get creative - 
+e1(2).FaceColor = [ 1 1 1]
+e1(3).FaceColor = [ 1 1 1]
+xtickangle(30)
+legend('GLEAM', 'NCEP', 'Regress')
+title('RMSE', 'FontSize', 25) % change title
+
+print('Rmse', '-dpng', '-r300')'% change filename
