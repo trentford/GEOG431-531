@@ -1,0 +1,49 @@
+% Time series data
+
+load('I:\GEOG531_19Spring_HW3\Weather Stations\stations.mat')
+
+
+
+for i = 1:9
+    r1 = find(sta(:,15) == i); % This is to reference the correct station. Find function finds which rows meets the criteria. In this case, which rows belong to station 1?
+    subset = sta(r1,:); %
+    
+    %diff1 = abs(subset(:,8) - subset(:,12));
+    %diff2 = abs(subset(:,8) - subset(:,13));
+    %diff3 = abs(subset(:,8) - subset(:,14));
+    
+    o = subset(:,8);
+    g = subset(:,12);
+    ne = subset(:,13);
+    m = subset(:,14);
+    
+    n = size(subset,1) % how many rows
+    
+    t1 = datetime(2003,1,1); % the beginning
+    t2 = datetime(2010,12,31); % the end
+    
+    x = linspace(t1,t2,n);
+    
+    figure
+        
+    p1 = subplot(3,1,1)
+    a1 = plot(x,o,x,g);
+    legend('obs', 'GLEAM', 'Location','southeastoutside')
+    
+    p2 = subplot(3,1,2)
+    a2 = plot(x,o,x,ne)
+    legend('obs', 'NCEP', 'Location','southeastoutside')
+    
+    p3 = subplot(3,1,3)
+    a3 = plot(x,o,x,m)
+    legend('obs', 'Modeled', 'Location','southeastoutside')
+    
+    sgtitle(['Station' num2str(i) '   Time Series of Observed versus other'], 'FontSize',13)
+    
+    print(['station' num2str(i) 'timeseries'], '-dpng', '-r900')
+    
+    clear o g ne m n x r1 subset
+    
+    close all
+        
+end
