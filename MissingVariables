@@ -1,0 +1,32 @@
+%% How much missing data is there for each variable
+
+%find year
+clc
+
+mx = max(data(:,3)); % Min year
+mn = min(data(:,3)); % Max year
+
+tab1 = NaN(2018,8);
+
+for i = mn:mx
+    %This will single out all your data by year
+    subset = find(data(:,3) == i);
+    subset = data(subset,:);
+    subset(isnan(subset) == 1) = -9999;
+
+    % This will determine the amount of days that is available for that
+    % year
+    le = size(subset,1);
+
+    % How many days are missing is a
+    a = sum(sum(subset == -9999,4)) 
+    
+    % divide that by the amount of days in the year
+    b = a./le
+    
+    tab1(i,:) = b;
+    
+end
+    
+
+tab1(1:1947,:) = [];
